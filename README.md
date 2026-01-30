@@ -1,6 +1,6 @@
 # ESPHome Designer
 
-**A visual drag-and-drop editor for ESPHome displays (E-Ink, OLED, LCD, Touch), running as a Home Assistant integration or a standalone web app.**
+**A visual drag-and-drop editor for smart displays, supporting ESPHome, OpenEpaperLink (OEPL), and OpenDisplay - running as a Home Assistant integration or a standalone web app.**
 
 <div align="center">
   <a href="https://github.com/sponsors/koosoli">
@@ -28,24 +28,31 @@
   <strong>▶️ Click to watch the latest feature walkthrough or try the demo!</strong>
 </div>
 
+<div align="center">
+  
+### 🖥️ Supported Platforms
+  
+| Platform | Output Format | Use Case |
+|----------|---------------|----------|
+| **ESPHome** | C++ Lambda / LVGL YAML | ESP32 devices with direct display control |
+| **OpenEpaperLink** | Home Assistant Service Call (JSON) | Wireless e-paper price tags (AP-based) |
+| **OpenDisplay** | JSON Actions | HTTP-driven e-paper displays |
+
+</div>
+
 **No more hand-coding ESPHome display lambdas! 🎉**
 
+Build premium, touch-interactive dashboards for ESP32-based devices, wireless e-paper price tags, and HTTP-driven displays - all without writing a single line of display code.
+
 ---
 
-
----
-
-
-Building a custom smart display for Home Assistant? Frustrated with manually writing C++ lambdas and guessing coordinates?
-
-Design ESPHome displays right inside Home Assistant or via a standalone web browser. While available as a HACS integration, you can also use the [GitHub-hosted version](https://koosoli.github.io/ESPHomeDesigner/) with a Long-Lived Access Token to access your entities.
-
-It enables you to build premium, touch-interactive dashboards for various ESP32-based devices (like the Seeed reTerminal, TRMNL, standard touch screens, and more) without writing a single line of display code.
-
-## What Does It Do?
+## 📋 What Does It Do?
 
 - **Visual drag-and-drop editor** - Design layouts in your browser, see your actual HA entities update live on the canvas
-- **Multi-Platform Support** - Native ESPHome C++ generation, plus experimental support for **OpenEpaperLink** and **Open Display**.
+- **Multi-Platform Export** - One design, multiple outputs:
+  - **ESPHome**: Native C++ lambda code or LVGL YAML for ESP32 devices with direct display control
+  - **OpenEpaperLink (OEPL)**: JSON service calls for wireless e-paper tags via the OEPL Access Point
+  - **OpenDisplay (ODP)**: JSON action payloads for HTTP-driven displays
 - **Multi-Page "World View"** - Manage all your project pages on a single unified stage with artboard-style rendering.
 - **Plugin-Based Architecture** - 55+ independent widget modules for everything from sensors and graphs to polygons and complex patterns.
 - **Round-trip editing** - Import existing ESPHome configs, OEPL YAML arrays, or ODP JSON payloads back into the editor.
@@ -55,9 +62,13 @@ It enables you to build premium, touch-interactive dashboards for various ESP32-
 
 **Use case:** Display a weather page when you wake up, switch to a sensor dashboard during the day, show a specific alert page when the doorbell rings - all automated through Home Assistant.
 
-## Quick Start
+---
 
-### 1. Try the Live Web Version (Easiest)
+## 🚀 Quick Start
+
+### Installation (pick one)
+
+#### 1. Live Web Version (Easiest)
 
 You can use the designer without installing anything! 
 
@@ -66,21 +77,35 @@ You can use the designer without installing anything!
 3. Enter your Home Assistant URL and a **Long-Lived Access Token** (created in your HA profile)
 4. Add the designer URL to your HA `cors_allowed_origins` (see below)
 
-### 2. Install via HACS (Recommended for Local Access)
+#### 2. Install via HACS (Recommended)
 
 1. Add `https://github.com/koosoli/ESPHomeDesigner` to HACS as a custom repository
 2. Search for "ESPHome Designer" and install
 3. Restart Home Assistant
 4. Go to **Settings** → **Devices & Services** → **Add Integration** → Search for "ESPHome Designer"
 
-### 2. Manual Installation
+#### 3. Manual Installation
 
 1. Download the `custom_components/esphome_designer` folder from this repo
 2. Copy it to your Home Assistant `config/custom_components/` directory
 3. Restart Home Assistant
 4. Add the integration via **Settings** → **Devices & Services**
 
-### 3. Prepare Your ESPHome Device
+#### 4. Local Development Server
+
+Run the editor locally without Home Assistant:
+
+```bash
+cd custom_components/esphome_designer/frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser. Connect to Home Assistant by entering your HA URL and a Long-Lived Access Token in Editor Settings.
+
+### Setup (ESPHome devices)
+
+#### 5. Prepare Your Device
 
 **Important:** Copy the Material Design Icons font file first!
 
@@ -95,7 +120,7 @@ Then create a new ESPHome device:
 2. Let ESPHome generate the base config (WiFi, API, OTA, etc.)
 3. Configure the correct ESP platform for your device (instructions included in the generated YAML comments)
 
-### 4. Design Your Dashboard
+#### 6. Design Your Dashboard
 
 1. Open the integration at `/esphome-designer` in Home Assistant
 2. Select your device type (E1001, E1002, TRMNL,...)
@@ -105,7 +130,7 @@ Then create a new ESPHome device:
 6. **Live Preview**: Your YAML is generated on the fly as you design! Just look at the YAML snippet box.
    <p align="center"><img src="screenshots/modern_canvas.gif" width="800" alt="Modern Canvas Interaction"></p>
 
-### 5. Flash It
+#### 7. Flash It
 
 1. Copy the generated YAML snippet
 2. Paste it below ESPHome's auto-generated sections in your device config
@@ -113,7 +138,7 @@ Then create a new ESPHome device:
 
 Done! Your custom dashboard is now running on your device.
 
-### 6. Connect & Automate
+#### 8. Connect & Automate
 
 Once flashed, your device will come online.
 
@@ -121,27 +146,9 @@ Once flashed, your device will come online.
 2. Your device should be discovered (or you can add it via the ESPHome integration).
 3. **Configure it** to ensure Home Assistant connects to its API.
 
-### 🌐 Standalone / GitHub Hosting & CORS
-If you are using the GitHub-hosted version or any URL that is not your local Home Assistant IP, you **must** allow cross-origin requests.
+---
 
-Add this to your Home Assistant `configuration.yaml` and **restart**:
-
-```yaml
-http:
-  cors_allowed_origins:
-    - https://koosoli.github.io
-```
-
-### Philosophy: Design here, Automate there.
-
-Think of this tool as the **Frontend Designer** for your physical display.
-
-- **Use this tool** to make it look beautiful (pixel-perfect placement, fonts, icons).
-- **Use Home Assistant** for the logic.
-
-We expose everything (buttons, sensors, battery) back to Home Assistant. Does a button press toggle a light? Play a sound? Trigger a scene? **Do that in Home Assistant Automations**, where HA shines best.
-
-## Widget Types
+## 🎨 Widget Types
 
 - **Text & Sensor Text** - Static labels or live HA entity values with smart type detection and multiple formatting options
   <p align="center"><img src="screenshots/text_formatting.gif" width="700" alt="Rich Text Formatting"></p>
@@ -158,7 +165,9 @@ We expose everything (buttons, sensors, battery) back to Home Assistant. Does a 
   <p align="center"><img src="screenshots/touch_icons.gif" width="700" alt="Touch Interactive Icons"></p>
 - **Weather Forecast** - Multi-day forecast display integrated with HA weather entities
 
-## LVGL Support (Experimental)
+---
+
+## ⚡ LVGL Support (Experimental)
 
 **⚠️ Highly Experimental - Expect Bugs!**
 
@@ -179,44 +188,49 @@ This tool includes experimental support for **LVGL (Light and Versatile Graphics
 
 For stable results, stick to **Native Mode** (standard widgets without LVGL prefix).
 
-## Features
+---
 
-- **Hierarchy & Layer Management** - New panel to manage widget z-index, visibility, and locking with a drag-and-drop interface
-- **Radial Context Menu** - Modern right-click menu for rapid widget actions (Copy, Lock, Snap, Delete)
-- **Visual Editor** - Drag-and-drop canvas with snap-to-grid, live entity state updates
-- **AI-Powered Assistant** - Design entire dashboards using text prompts with support for Gemini, OpenAI, and OpenRouter
-- **Secure API Storage** - AI keys are stored locally in your browser and never sent to the backend or included in exports
-- **Hyper-Strict AI Compliance** - Engineered system prompts ensure the AI follows literal text instructions and professional design rules
-- **Layout Manager** - Manage multiple devices, export/import layouts as files
-- **Entity Picker** - Browse and search your actual HA entities with real-time preview
-- **Multi-Page Support** - Create up to 10 pages, each with custom refresh intervals
-- **Multi-Page "World View"** - Render all project pages side-by-side as distinct artboards for a unified project overview
-- **Precision Page Navigation** - One-click focusing (e.g., clicking "Overview") that instantly centers artboards with pixel-perfect accuracy
-- **Collapsible Page Selector** - Modern, space-saving accordion UI for page management with bespoke status icons
-- **Canvas Controls** - Zoom in/out, reset, and precision zoom-to-cursor for detailed pixel work
-- **Dark Mode Option** - Toggle "Dark Mode" in device settings for black backgrounds
-- **Hardware Integration** - Buttons, buzzer, temperature, humidity sensors exposed to HA
-- **Smart Generator** - Produces clean, additive YAML that doesn't conflict with your base config
-- **Template-Free Workflow** - No more manual template merging, just paste and go
-- **Live YAML Generation** - Your YAML is generated on the fly as you design; no more "Generate" buttons
-- **RGB Color Picker** - Precise color control for e-paper and LCD widgets
-  <p align="center"><img src="screenshots/rgb_picker.gif" width="700" alt="RGB Color Picker"></p>
-- **Round-Trip Editing** - Import existing ESPHome code back into the editor (now supports LVGL widgets!)
-  <p align="center"><img src="screenshots/yaml_parsing.gif" width="700" alt="YAML Round-Trip Import"></p>
-- **Modular Plugin Architecture (v0.9)** - A complete rewrite featuring a specialized plugin system with 55+ independent widget modules, making the core significantly faster and more maintainable.
-- **Multi-Platform Canvas** - Design for ESPHome, OpenEpaperLink, or Open Display with platform-specific export adapters.
-- **High-Fidelity "World View" Rendering** - See your entire multi-page project at once on a unified stage with premium drop shadows.
-- **Visual Hierarchy Navigation** - A dedicated tree-view panel for managing complex layers, nested groups, and pixel-perfect selection.
-- **Precision Page Navigation** - Instant focusing and centering of artboards with pixel-perfect accuracy.
-- **Atomic Grouping** - Groups behave as solid containers, preserving hierarchy and layer order during cross-page moves.
-- **Smart Spacing & Alignment** - Contextual toolbars and guides for professional-grade layout design.
-- **Hardware-Aware Energy Strategies** - Dynamic strategy selection for LCD, OLED, and E-Ink technology.
-- **Drag & Drop Workflow** - Drag widgets directly from the sidebar onto any artboard in the project.
-- **Experimental: Custom Hardware Profiles** - Create and save your own hardware definitions directly in the UI.
-- **Experimental LVGL Support** - (Beta) Support for interactive LVGL widgets on capable devices
-- **Mobile Support** - Responsive UI designed to work on smaller screens and touch devices
+## 📡 OpenEpaperLink & OpenDisplay
 
-## Technical Details
+Design once, export to wireless e-paper displays:
+
+- **[OpenEpaperLink](https://github.com/jjwbruijn/OpenEPaperLink)** - Select "OpenEpaperLink" mode, enter your tag's entity ID, copy the JSON for use in HA service calls
+- **[OpenDisplay](https://github.com/open-display/open-display)** - Select "OpenDisplay" mode, copy the JSON actions, send via HTTP POST
+
+Most widgets (text, shapes, images, icons, QR codes) work on all platforms. Graphs, touch areas, and LVGL are ESPHome-only.
+
+---
+
+## ⚙️ Features
+
+**Editor**
+- Visual drag-and-drop canvas with snap-to-grid and live entity state updates
+- Multi-page "World View" - see all pages as artboards on a unified stage
+- Hierarchy panel for layer management, z-index, and widget locking
+- Entity picker with real-time preview of your HA entities
+- AI assistant (Gemini, OpenAI, OpenRouter) for generating layouts from text prompts
+- Round-trip editing - import existing ESPHome/OEPL/ODP code back into the editor
+
+**Output**
+- Live code generation as you design (no "Generate" button needed)
+- Multi-platform export: ESPHome C++/LVGL, OpenEpaperLink JSON, OpenDisplay JSON
+- Smart YAML generator - clean, additive output that won't conflict with your base config
+
+**Design Tools**
+- RGB color picker, dark mode toggle, zoom controls
+- Smart spacing, alignment guides, and radial context menu
+- Widget grouping with preserved hierarchy
+- 55+ widget plugins (v0.9 modular architecture)
+
+**Hardware**
+- Buttons, buzzer, temp/humidity sensors exposed to Home Assistant
+- Battery monitoring and configurable refresh intervals
+- Hardware-aware energy strategies for LCD, OLED, and E-Ink
+- Custom hardware profile creation (experimental)
+
+---
+
+## 🔧 Technical Details
 
 The generator produces **complete, standalone YAML** - no templates needed!
 
@@ -232,8 +246,9 @@ The generator produces **complete, standalone YAML** - no templates needed!
 
 The workflow is safe and deterministic - same layout always produces the same YAML.
 
+---
 
-## Hardware Support
+## 🖥️ Hardware Support
 
 **Currently Supported:**
 - **Seeed Studio**: [reTerminal E1001](https://www.seeedstudio.com/reTerminal-E1001-p-6534.html?sensecap_affiliate=U5gNTEF&referring_service=link) (BW), [reTerminal E1002](https://www.seeedstudio.com/reTerminal-E1002-p-6533.html?sensecap_affiliate=U5gNTEF&referring_service=link) (Color), [TRMNL 7.5'' OG DIY Kit](https://www.seeedstudio.com/TRMNL-7-5-Inch-OG-DIY-Kit-p-6481.html?sensecap_affiliate=U5gNTEF&referring_service=link) (S3)
@@ -253,8 +268,9 @@ The workflow is safe and deterministic - same layout always produces the same YA
 
 All exposed as Home Assistant entities for use in automations.
 
+---
 
-## Repository Structure
+## 📁 Repository Structure
 
 - `custom_components/esphome_designer/` - Home Assistant integration
   - `api/` - Modular Python backend handlers for HA
@@ -268,7 +284,9 @@ All exposed as Home Assistant entities for use in automations.
 - `hardware_recipes_guide.md` - Guide for creating custom hardware profiles
 - `screenshots/` - Editor screenshots
 
-## Troubleshooting
+---
+
+## ❓ Troubleshooting
 
 **Font compilation error?**
 - Make sure you copied `materialdesignicons-webfont.ttf` to `/config/esphome/fonts/`
@@ -298,7 +316,17 @@ Add `compile_process_limit: 1` to your `esphome:` section in the YAML. This redu
    python -m esphome compile C:\esphome_build\reterminal.yaml
 Upload: Take the generated .bin file and upload it via the Home Assistant ESPHome dashboard (Install → Manual Download).
 
-## License
+**CORS errors with GitHub-hosted version?**
+Add this to your Home Assistant `configuration.yaml` and restart:
+```yaml
+http:
+  cors_allowed_origins:
+    - https://koosoli.github.io
+```
+
+---
+
+## 📄 License
 
 Made with love ❤️ - free and Open Source under the GPL 3.0 license. Share the love!
 
